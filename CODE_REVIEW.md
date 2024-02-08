@@ -1,19 +1,19 @@
+TASK :1
 
-TASK 1:
+- When we do a default install of all the packages we are unable to import even if we give absolute path for @tmo/shared/models
+- Exceptions were not handled for the get ReadingList API (fixed)
+- Exceptions were not handled for the addToReadingList API  (fixed)
+- Exceptions were not handled for the removeFromReadingList API  (fixed)
+- Missing types in multiple places.
+- Don't use symbols for folder names (_+_state)
+- Always use proper variable names. (book-search.component.html, reading-list.component.html)
 
-Default installation of all packages results in import failure, even with absolute path for @tmo/shared/models.
-Fixed: Exception handling was missing in the getReadingList API.
-Fixed: Exception handling was missing in the addToReadingList API.
-Fixed: Exception handling was missing in the removeFromReadingList API.
-There are several instances of missing types.
-Avoid using symbols in folder names (example: _+_state).
-Ensure the use of descriptive variable names (refer to book-search.component.html, reading-list.component.html).
-Lighthouse Issues:
+Lighthouse issues:
 
-Fixed: Buttons lacked an accessible name.
-Fixed: Insufficient contrast ratio between background and foreground colors.
-Manually Fixed Accessibility Issues:
+Buttons do not have an accessible name  ;  (fixed)
+Background and foreground colors do not have a sufficient contrast ratio.  ;  (fixed)
 
-Improved accessibility for the book card in book-search.component.html.
-Enhanced accessibility for the "Want to Read" button.
-Improved accessibility for the close button in the My Reading List Drawer.
+Manual Accesibility fixed issues:
+- Add accesibility for book card in book-search.component.html
+- Add accesibility for "Want to Read" button.
+- Add accesibility for close button in My Reading List Drawer

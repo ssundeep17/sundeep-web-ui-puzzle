@@ -1,25 +1,25 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   addToReadingList,
   clearSearch,
   getAllBooks,
   ReadingListBook,
+  removeFromReadingList,
   searchBooks
 } from '@tmo/books/data-access';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder } from '@angular/forms';
-import { Book } from '@tmo/shared/models';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { Book, ReadingListItem } from '@tmo/shared/models';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit, OnDestroy {
+export class BookSearchComponent implements OnInit {
   books: ReadingListBook[];
-  private unsubscribe$ = new Subject<void>();
+  lastAdded:ReadingListItem;
 
   searchForm = this.fb.group({
     term: ''
@@ -27,31 +27,27 @@ export class BookSearchComponent implements OnInit, OnDestroy {
 
   constructor(
     private readonly store: Store,
-    private readonly fb: FormBuilder
+    private readonly fb: FormBuilder,
+    private _snackBar: MatSnackBar
   ) {}
+
+  get searchTerm(): string {
+    return this.searchForm.value.term;
+  }
 
   ngOnInit(): void {
     this.store.select(getAllBooks).subscribe(books => {
       this.books = books;
     });
-
-    // Subscribe to search term changes with debouncing
-    this.searchForm.controls.term.valueChanges.pipe(
-      debounceTime(500), // Add debouncing
-      distinctUntilChanged(), // Ensure the term has changed before making a new request
-      takeUntil(this.unsubscribe$) // Cleanup subscription on component destroy
-    ).subscribe(term => {
-      this.searchBooks(term);
-    });
   }
 
-  get searchTerm(): string {
-        return this.searchForm.value.term;
-      }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
+  openSnackBar(message: string, action: string) {
+    const snackBarRef = this._snackBar.open(message, action, {
+      duration: 5000
+    });
+    snackBarRef.onAction().subscribe(() => {
+      this.store.dispatch(removeFromReadingList({ item: this.lastAdded }));
+    });
   }
 
   formatDate(date: void | string) {
@@ -61,16 +57,19 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   addBookToReadingList(book: Book) {
+    this.lastAdded = {bookId:book.id,...book};
     this.store.dispatch(addToReadingList({ book }));
+    this.openSnackBar('Book Added to the list','Undo');
   }
 
   searchExample() {
     this.searchForm.controls.term.setValue('javascript');
+    this.searchBooks();
   }
 
-  searchBooks(term: string) {
-    if (term) {
-      this.store.dispatch(searchBooks({ term }));
+  searchBooks() {
+    if (this.searchForm.value.term) {
+      this.store.dispatch(searchBooks({ term: this.searchTerm }));
     } else {
       this.store.dispatch(clearSearch());
     }
