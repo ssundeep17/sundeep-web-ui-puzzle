@@ -11,4 +11,28 @@ describe('When: I use the reading list feature', () => {
       'My Reading List'
     );
   });
+
+  it('Then: I should be able to undo adding a book', () => {
+    
+    // Type a search term and submit the search form
+    cy.get('input[type="search"]').type('javascript');
+    cy.get('form').submit();
+    
+    // Add a book to the reading list
+    cy.get('[data-testing="book-item"]').first().contains('Want to Read').click();
+
+    // Click the "Reading List" button to open the reading list
+    cy.get('[data-testing="toggle-reading-list"]').click();
+
+    // Click the "remove_circle" button for each book in the reading list
+  cy.get('[data-testing="reading-list-container"]').within(() => {
+    cy.get('button[aria-label^="Remove"]').should('be.visible').each(($button) => {
+      cy.wrap($button).click();
+    });
+  });
+  
+    // Verify that the snackbar appears
+    cy.get('.mat-simple-snackbar-action').should('be.visible');
+  });
+  
 });
