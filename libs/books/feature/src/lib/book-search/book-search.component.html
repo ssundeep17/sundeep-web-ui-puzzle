@@ -1,6 +1,5 @@
-<form [formGroup]="searchForm" (submit)="searchBooks()">
+<form [formGroup]="searchForm">
   <mat-form-field floatLabel="never">
-    <!-- Adding an explicit aria-label to the input for clarity -->
     <input
       autoFocus
       matInput
@@ -9,11 +8,9 @@
       aria-label="Search for books to add to your reading list"
       formControlName="term"
     />
-    <button aria-label="Click here to start search" mat-icon-button matSuffix>
-      <mat-icon>search</mat-icon>
-    </button>
   </mat-form-field>
 </form>
+
 
 <ng-container *ngIf="searchTerm; else empty">
   <div class="book-grid">
