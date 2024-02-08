@@ -32,15 +32,28 @@
             <strong>Published:</strong> {{ formatDate(b.publishedDate) }}
           </div>
           <p [innerHTML]="b.description"></p>
-          <div>
+          <div *ngIf="finishedBooks.indexOf(b.id)==-1">
             <button
+              
               mat-flat-button
+              data-testing="read-button"
               color="primary"
               (click)="addBookToReadingList(b)"
               [disabled]="b.isAdded"
               aria-label="Want to Read"
             >
               Want to Read
+            </button>
+          </div>
+          <div  *ngIf="finishedBooks.indexOf(b.id)!=-1">
+            <button
+           
+              mat-flat-button
+              color="primary"
+              disabled="true"
+              aria-label="Finished"
+            >
+            Finished  
             </button>
           </div>
         </div>
